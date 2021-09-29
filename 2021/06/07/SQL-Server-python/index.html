@@ -1,0 +1,299 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SQL Server &amp; python | Kzedd</title><meta name="keywords" content="SQL"><meta name="author" content="李培佳"><meta name="copyright" content="李培佳"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="引言本文为记录本人使用python对SQL Server进行操作，封装的过程。 版本信息：  python: 3.8.8(如果使用MySQL，根据官方文档，python版本必须低于3.9) SQL Server: 2019 python库函数: pymysql  平台：  vscode  mssql插件   正文数据库（.sql文件）介绍网上的文章大多描述的很清晰，当新建一个.sql文件，不管文件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL Server &amp; python">
+<meta property="og:url" content="https://zedd-l.github.io/2021/06/07/SQL-Server-python/index.html">
+<meta property="og:site_name" content="Kzedd">
+<meta property="og:description" content="引言本文为记录本人使用python对SQL Server进行操作，封装的过程。 版本信息：  python: 3.8.8(如果使用MySQL，根据官方文档，python版本必须低于3.9) SQL Server: 2019 python库函数: pymysql  平台：  vscode  mssql插件   正文数据库（.sql文件）介绍网上的文章大多描述的很清晰，当新建一个.sql文件，不管文件">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://zedd-l.github.io/img/avator.GIF">
+<meta property="article:published_time" content="2021-06-07T05:51:42.000Z">
+<meta property="article:modified_time" content="2021-06-07T08:27:44.213Z">
+<meta property="article:author" content="李培佳">
+<meta property="article:tag" content="SQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://zedd-l.github.io/img/avator.GIF"><link rel="shortcut icon" href="/img/logo.jpg"><link rel="canonical" href="https://zedd-l.github.io/2021/06/07/SQL-Server-python/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'SQL Server & python',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-06-07 16:27:44'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if (GLOBAL_CONFIG_SITE.isHome && /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avator.GIF" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">11</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('http://up.36992.com/pic/e6/c5/51/e6c551e768092c8655292d89a4034a74.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Kzedd</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">SQL Server &amp; python</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-06-07T05:51:42.000Z" title="发表于 2021-06-07 13:51:42">2021-06-07</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-06-07T08:27:44.213Z" title="更新于 2021-06-07 16:27:44">2021-06-07</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>5分钟</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><p>本文为记录本人使用python对SQL Server进行操作，封装的过程。</p>
+<p>版本信息：</p>
+<ul>
+<li>python: 3.8.8(如果使用MySQL，根据官方文档，python版本必须低于3.9)</li>
+<li>SQL Server: 2019</li>
+<li>python库函数: <code>pymysql</code></li>
+</ul>
+<p>平台：</p>
+<ul>
+<li><p>vscode</p>
+</li>
+<li><p>mssql插件</p>
+</li>
+</ul>
+<h3 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h3><h4 id="数据库（-sql文件）介绍"><a href="#数据库（-sql文件）介绍" class="headerlink" title="数据库（.sql文件）介绍"></a>数据库（<code>.sql</code>文件）介绍</h4><p>网上的文章大多描述的很清晰，当新建一个<code>.sql</code>文件，不管文件是否有内容，编译器（本人使用的为vscode中的mssql插件）都会发出连接请求，即<code>.sql</code>文件必须运行在SQL Sever服务器上（或者MySQL），故想要运行<code>.sql</code>文件，必须首先安装SQL Server， 随后在vscode中，运行<code>.sql</code>文件，就可以添加连接。</p>
+<p>具体过程不在赘述，注意Server name填写<code>localhost</code>，Database不填，连接方式（Authentication Type）选择集成方式（Integrated）即可。</p>
+<p><code>.sql</code>文件中的具体语法不是本文的重点，下面以一个简单的数据库为例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">USE master</span><br><span class="line">GO</span><br><span class="line">IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> name</span><br><span class="line">        <span class="keyword">FROM</span> sys.databases</span><br><span class="line">        <span class="keyword">WHERE</span> name <span class="operator">=</span> N<span class="string">&#x27;abc&#x27;</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">CREATE</span> DATABASE abc</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line"><span class="comment">-- Create a new table called &#x27;employees&#x27; in schema &#x27;dbo&#x27;</span></span><br><span class="line"><span class="comment">-- Drop the table if it already exists</span></span><br><span class="line">IF OBJECT_ID(<span class="string">&#x27;dbo.employees&#x27;</span>, <span class="string">&#x27;U&#x27;</span>) <span class="keyword">IS</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> dbo.employees</span><br><span class="line">GO</span><br><span class="line"><span class="comment">-- Create the table in the specified schema</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> dbo.employees</span><br><span class="line">(</span><br><span class="line">    employeesId <span class="type">INT</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">PRIMARY</span> KEY,</span><br><span class="line">    Name [NVARCHAR](<span class="number">50</span>)  <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">    Location [NVARCHAR](<span class="number">50</span>)  <span class="keyword">NOT</span> <span class="keyword">NULL</span></span><br><span class="line">    <span class="comment">-- specify more columns here</span></span><br><span class="line">);</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line"><span class="comment">-- Insert rows into table &#x27;Employees&#x27;</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> employees</span><br><span class="line">   ([employeesId],[Name],[Location])</span><br><span class="line"><span class="keyword">VALUES</span></span><br><span class="line">   ( <span class="number">1</span>, N<span class="string">&#x27;Jared&#x27;</span>, N<span class="string">&#x27;Australia&#x27;</span>),</span><br><span class="line">   ( <span class="number">2</span>, N<span class="string">&#x27;Nikita&#x27;</span>, N<span class="string">&#x27;India&#x27;</span>),</span><br><span class="line">   ( <span class="number">3</span>, N<span class="string">&#x27;Tom&#x27;</span>, N<span class="string">&#x27;Germany&#x27;</span>),</span><br><span class="line">   ( <span class="number">4</span>, N<span class="string">&#x27;Jake&#x27;</span>, N<span class="string">&#x27;United States&#x27;</span>),</span><br><span class="line">   ( <span class="number">5</span>, N<span class="string">&#x27;Kz&#x27;</span>, N<span class="string">&#x27;China&#x27;</span>)</span><br><span class="line">GO</span><br><span class="line"><span class="comment">-- Query the total count of employees</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">as</span> employeeCount <span class="keyword">FROM</span> dbo.employees;</span><br><span class="line"><span class="comment">-- Query all employee information</span></span><br><span class="line"><span class="keyword">SELECT</span> e.employeesId, e.Name, e.Location</span><br><span class="line"><span class="keyword">FROM</span> dbo.employees <span class="keyword">as</span> e</span><br><span class="line">GO</span><br></pre></td></tr></table></figure>
+<p>运行正确的结果如下图所示：</p>
+<p><img src="/2021/06/07/SQL-Server-python/1.png" alt="1"></p>
+<p>此时，我们得到了一个运行在线上的在线数据库，它其中具有价值的信息即图中下方的表格中的内容。</p>
+<p>我们可以通过不断的修改<code>.sql</code>文件对数据库进行修改，但是这样做的效率十分低下（介于<code>sql</code>的语法），使用python可以很好的做到批量操作，极大的提高了效率。同时，使用python也可以对数据库进行封装，从而得到一个创建在数据库上的应用程序（<code>.exe</code>）</p>
+<h4 id="python操作"><a href="#python操作" class="headerlink" title="python操作"></a>python操作</h4><p>所有操作使用了<code>pymssql</code>库，之前没有装过的用户在命令行中使用下面的命令即可</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install pymssql</span><br></pre></td></tr></table></figure>
+<p>当然MySQL也有对应的库<code>pymysql</code>，两个库的操作以及函数用法基本上是相同的。</p>
+<p>首先先进行一个简单的连接测试</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pymssql</span><br><span class="line"></span><br><span class="line">connect = pymssql.connect(<span class="string">&#x27;localhost&#x27;</span>, database=<span class="string">&#x27;abc&#x27;</span>) <span class="comment">#注意这里的database为数据库名称</span></span><br><span class="line"><span class="keyword">if</span> connect:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;------Connection successfully------&quot;</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;------Connection failed------&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>上文提到过，由于使用的连接方式是集成式的，故不需要账户密码就可以直接连接。</p>
+<p>连接成功后，我们来查看python能否正确的获得数据库中的内容</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">cursor = connect.cursor() <span class="comment">#cursor函数用来获得一个光标对象</span></span><br><span class="line">sql = <span class="string">&#x27;select * from master.dbo.employees&#x27;</span> <span class="comment">#注意这里，表名前一定要加上master.dbo.xxxx，否则无法正确的找到表</span></span><br><span class="line">cursor.execute(sql)</span><br><span class="line">results = cursor.fetchall()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;id&quot;</span>,<span class="string">&quot;Name&quot;</span>,<span class="string">&quot;Location&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> row <span class="keyword">in</span> results:  </span><br><span class="line">    <span class="built_in">id</span> = row[<span class="number">0</span>]  </span><br><span class="line">    name = row[<span class="number">1</span>]  </span><br><span class="line">    location = row[<span class="number">2</span>]  </span><br><span class="line">    <span class="built_in">print</span>(<span class="built_in">id</span>,name,location)</span><br><span class="line">cursor.close()   </span><br><span class="line">connect.close()</span><br><span class="line"><span class="comment">#结束后一定要调用close方法，不然python程序将一直占用数据库对象</span></span><br></pre></td></tr></table></figure>
+<p>结果应该如下图：</p>
+<p><img src="/2021/06/07/SQL-Server-python/2.png" alt="2"></p>
+<p>可以看到，python正确的获得了数据库中的内容，观察代码，很明显可以看到，python程序只是模拟了数据库的行为</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sql = <span class="string">&#x27;select * from master.dbo.employees&#x27;</span></span><br><span class="line">cursor.execute(sql)</span><br></pre></td></tr></table></figure>
+<p><code>sql</code>字符串的内容即为<code>.sql</code>文件中对数据库进行操作的语法</p>
+<p>同理，对于数据库的创建，删除，表格的创建，插入，删除都可以通过这样的方式实现</p>
+<p>最后将所有操作封装为类：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pymssql</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SQLServer</span>():</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, database, charset=<span class="string">&#x27;utf-8&#x27;</span></span>):</span></span><br><span class="line">        self.port = <span class="string">&#x27;localhost&#x27;</span></span><br><span class="line">        self.database = database</span><br><span class="line">        self.charset = charset</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_connect_</span>(<span class="params">self</span>):</span></span><br><span class="line">        self.connect = pymssql.connect(<span class="string">&#x27;localhost&#x27;</span>, database=<span class="string">&#x27;abc&#x27;</span>)</span><br><span class="line">        <span class="keyword">if</span> self.connect:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;------Connection successfully------&quot;</span>)</span><br><span class="line">            self.cursor = self.connect.cursor()</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;------Connection failed------&quot;</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">SelectTable</span>(<span class="params">self, table_name:<span class="built_in">str</span></span>):</span></span><br><span class="line">        self._connect_()</span><br><span class="line">        sql = <span class="string">&#x27;select * from &#x27;</span> + table_name</span><br><span class="line">        self.cursor.execute(sql)</span><br><span class="line">        results = self.cursor.fetchall()</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;id&quot;</span>,<span class="string">&quot;Name&quot;</span>,<span class="string">&quot;Location&quot;</span>)</span><br><span class="line">        <span class="keyword">for</span> row <span class="keyword">in</span> results:  </span><br><span class="line">            <span class="built_in">id</span> = row[<span class="number">0</span>]  </span><br><span class="line">            name = row[<span class="number">1</span>]  </span><br><span class="line">            location = row[<span class="number">2</span>]  </span><br><span class="line">            <span class="built_in">print</span>(<span class="built_in">id</span>,name,location)</span><br><span class="line">        self.cursor.close()   </span><br><span class="line">        self.connect.close()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">Insert</span>(<span class="params">self, table_name</span>):</span></span><br><span class="line">        self._connect_()</span><br><span class="line">        sql = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">            INSERT INTO %s</span></span><br><span class="line"><span class="string">            VALUES</span></span><br><span class="line"><span class="string">                ( 6, N&#x27;test&#x27;, N&#x27;test_country&#x27;)；</span></span><br><span class="line"><span class="string">            commit</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span>%(table_name)</span><br><span class="line">        self.cursor.execute(sql)</span><br><span class="line">        self.cursor.close()</span><br><span class="line">        self.connect.close()</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;------Inserted------&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><strong>注意：如果在sql文件中创建数据库时使用了USE master，并且创建表格时使用了dbo，则在python程序中，选择表名时一定要在前面加上master.dbo.xxxx，xxxx为表名</strong></p>
+<p><strong>代码中的操作很多是建立在已知表格属性的基础上的，在进行测试时请自行根据数据库属性进行调整，Insert函数中的插入值只是作为测试，如果需要批量插入仍然需要对代码进行修改！</strong></p>
+<h3 id="常见错误"><a href="#常见错误" class="headerlink" title="常见错误"></a>常见错误</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pymssql._pymssql.OperationalError: (20009, b<span class="string">&#x27;DB-Lib error message 20009, severity 9:\nUnable to connect: Adaptive Server is unavailable or does not exist (localhost)\nNet-Lib error during Unknown error (10061)\nDB-Lib error message 20009, severity 9:\nUnable to connect: Adaptive Server is unavailable or does not exist (localhost)\nNet-Lib error during Unknown error (10061)\n&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>未打开TCP</p>
+<p>解决步骤：SQL Server 20xx 配置管理器 $\rightarrow$ SQL Server 网络配置 $\rightarrow$ MSSQLSERVER的协议 $\rightarrow$ 打开TCP/IP $\rightarrow$ SQL Server服务重启</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pymssql._pymssql.ProgrammingError: (208, b<span class="string">&quot;Invalid object name &#x27;dbo.forlogin&#x27;.DB-Lib error message 20018, severity 16:\nGeneral SQL Server error: Check messages from the SQL Server\n&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>表格名错误，应该为master.dbo.forlogin</p>
+<h2 id="感谢阅读"><a href="#感谢阅读" class="headerlink" title="感谢阅读"></a>感谢阅读</h2></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">李培佳</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://zedd-l.github.io/2021/06/07/SQL-Server-python/">https://zedd-l.github.io/2021/06/07/SQL-Server-python/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://zedd-l.github.io" target="_blank">Kzedd</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/SQL/">SQL</a></div><div class="post_share"><div class="social-share" data-image="/img/avator.GIF" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/06/09/Cliff-Walking/"><img class="prev-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Cliff-Walking</div></div></a></div><div class="next-post pull-right"><a href="/2021/05/27/xgboost/"><img class="next-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">xgboost</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avator.GIF" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">李培佳</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">11</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="mailto:869798097@qq.com" target="_blank" title=""><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">引言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A3%E6%96%87"><span class="toc-number">2.</span> <span class="toc-text">正文</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%88-sql%E6%96%87%E4%BB%B6%EF%BC%89%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.1.</span> <span class="toc-text">数据库（.sql文件）介绍</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#python%E6%93%8D%E4%BD%9C"><span class="toc-number">2.2.</span> <span class="toc-text">python操作</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF"><span class="toc-number">3.</span> <span class="toc-text">常见错误</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%84%9F%E8%B0%A2%E9%98%85%E8%AF%BB"><span class="toc-number"></span> <span class="toc-text">感谢阅读</span></a></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2021/09/28/PID%E9%98%B6%E8%B7%83%E5%93%8D%E5%BA%94/" title="PID阶跃响应"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="PID阶跃响应"/></a><div class="content"><a class="title" href="/2021/09/28/PID%E9%98%B6%E8%B7%83%E5%93%8D%E5%BA%94/" title="PID阶跃响应">PID阶跃响应</a><time datetime="2021-09-28T15:54:39.000Z" title="发表于 2021-09-28 23:54:39">2021-09-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2021/07/08/yolo/" title="YOLOv2安装以及使用">YOLOv2安装以及使用</a><time datetime="2021-07-07T17:12:43.000Z" title="发表于 2021-07-08 01:12:43">2021-07-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2021/06/17/opencv/" title="移动目标检测">移动目标检测</a><time datetime="2021-06-17T11:54:35.000Z" title="发表于 2021-06-17 19:54:35">2021-06-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2021/06/09/Cliff-Walking/" title="Cliff-Walking">Cliff-Walking</a><time datetime="2021-06-09T13:12:25.000Z" title="发表于 2021-06-09 21:12:25">2021-06-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2021/06/07/SQL-Server-python/" title="SQL Server &amp; python">SQL Server &amp; python</a><time datetime="2021-06-07T05:51:42.000Z" title="发表于 2021-06-07 13:51:42">2021-06-07</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('http://up.36992.com/pic/e6/c5/51/e6c551e768092c8655292d89a4034a74.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2021 By 李培佳</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '91bbb220905182860d25',
+      clientSecret: 'b3d108a2085f59f4671056abd98cb15aa5d6b3ce',
+      repo: 'Zedd-l.github.io',
+      owner: 'Zedd-l',
+      admin: ['Zedd-l'],
+      id: '7d06c7dc957c9270a490905cf2bf9a54',
+      language: 'zh-CN',
+      perPage: 10,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: false,
+      updateCountCallback: commentCount
+    },null))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-fluttering-ribbon.min.js"></script></div></body></html>

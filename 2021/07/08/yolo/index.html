@@ -1,0 +1,305 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>YOLOv2安装以及使用 | Kzedd</title><meta name="keywords" content="模式识别"><meta name="author" content="李培佳"><meta name="copyright" content="李培佳"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="引言本文目的在于记录yolov2的安装过程，防止电脑的更换造成的不便 平台 Ubuntu 20.04 OpenCV4 CUDA Version 11.2 Nvidia Driver Version 460.73.01 cmake  DarkNet首先安装darknet，地址：https:&#x2F;&#x2F;github.com&#x2F;pjreddie&#x2F;darknet 实际上，有了darknet，再下载一个weights">
+<meta property="og:type" content="article">
+<meta property="og:title" content="YOLOv2安装以及使用">
+<meta property="og:url" content="https://zedd-l.github.io/2021/07/08/yolo/index.html">
+<meta property="og:site_name" content="Kzedd">
+<meta property="og:description" content="引言本文目的在于记录yolov2的安装过程，防止电脑的更换造成的不便 平台 Ubuntu 20.04 OpenCV4 CUDA Version 11.2 Nvidia Driver Version 460.73.01 cmake  DarkNet首先安装darknet，地址：https:&#x2F;&#x2F;github.com&#x2F;pjreddie&#x2F;darknet 实际上，有了darknet，再下载一个weights">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://zedd-l.github.io/img/avator.GIF">
+<meta property="article:published_time" content="2021-07-07T17:12:43.000Z">
+<meta property="article:modified_time" content="2021-07-08T05:54:59.044Z">
+<meta property="article:author" content="李培佳">
+<meta property="article:tag" content="模式识别">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://zedd-l.github.io/img/avator.GIF"><link rel="shortcut icon" href="/img/logo.jpg"><link rel="canonical" href="https://zedd-l.github.io/2021/07/08/yolo/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'YOLOv2安装以及使用',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-07-08 13:54:59'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if (GLOBAL_CONFIG_SITE.isHome && /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avator.GIF" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">11</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('http://up.36992.com/pic/e6/c5/51/e6c551e768092c8655292d89a4034a74.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Kzedd</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">YOLOv2安装以及使用</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-07-07T17:12:43.000Z" title="发表于 2021-07-08 01:12:43">2021-07-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-07-08T05:54:59.044Z" title="更新于 2021-07-08 13:54:59">2021-07-08</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">711</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>2分钟</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>本文目的在于记录yolov2的安装过程，防止电脑的更换造成的不便</p>
+<h2 id="平台"><a href="#平台" class="headerlink" title="平台"></a>平台</h2><ul>
+<li>Ubuntu 20.04</li>
+<li>OpenCV4</li>
+<li>CUDA Version 11.2</li>
+<li>Nvidia Driver Version 460.73.01</li>
+<li>cmake</li>
+</ul>
+<h2 id="DarkNet"><a href="#DarkNet" class="headerlink" title="DarkNet"></a>DarkNet</h2><p>首先安装<code>darknet</code>，地址：<a target="_blank" rel="noopener" href="https://github.com/pjreddie/darknet">https://github.com/pjreddie/darknet</a></p>
+<p>实际上，有了<code>darknet</code>，再下载一个<code>weights</code>文件就可以得到一个预先训练的模型，通过下面的命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://pjreddie.com/media/files/yolov2.weights</span><br></pre></td></tr></table></figure>
+<p>下载<code>yolov2.weights</code>文件并放在<code>darknet</code>目录下，在<code>darknet</code>目录下，通过下述命令运行检测器</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">make</span><br><span class="line">./darknet detect cfg/yolov2.cfg yolov2.weights</span><br></pre></td></tr></table></figure>
+<p><code>make</code>会编译生成可执行文件<code>darknet</code>，执行命令后会收到提示：<code>Enter Image Path:</code></p>
+<p><img src="/2021/07/08/yolo/1.png" alt="1"></p>
+<p>输入图片路径后即可得到结果，结果会被保存在当前目录下，命名为<code>predictions.png</code></p>
+<p><img src="/2021/07/08/yolo/predictions.jpg" alt="predictions" style="zoom:67%;"></p>
+<h2 id="基于OpenCV-amp-CUDA的实时检测"><a href="#基于OpenCV-amp-CUDA的实时检测" class="headerlink" title="基于OpenCV &amp; CUDA的实时检测"></a>基于OpenCV &amp; CUDA的实时检测</h2><h3 id="安装OpenCV"><a href="#安装OpenCV" class="headerlink" title="安装OpenCV"></a>安装OpenCV</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir opencv_build</span><br><span class="line"><span class="built_in">cd</span> opencv_build</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/opencv/opencv.git</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/opencv/opencv_contrib.git</span><br></pre></td></tr></table></figure>
+<p>在<code>opencv</code>目录下，新建文件夹<code>build</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mkdir build</span><br><span class="line"><span class="built_in">cd</span> build</span><br><span class="line">cmake -D CMAKE_BUILD_TYPE=RELEASE \</span><br><span class="line">    -D CMAKE_INSTALL_PREFIX=/usr/<span class="built_in">local</span> \</span><br><span class="line">    -D INSTALL_C_EXAMPLES=ON \</span><br><span class="line">    -D INSTALL_PYTHON_EXAMPLES=ON \</span><br><span class="line">    -D OPENCV_GENERATE_PKGCONFIG=ON \</span><br><span class="line">    -D OPENCV_EXTRA_MODULES_PATH=~/opencv_build/opencv_contrib/modules \</span><br><span class="line">    -D BUILD_EXAMPLES=ON ..</span><br></pre></td></tr></table></figure>
+<p>其中<code>OPENCV_EXTRA_MODULES_PATH</code>为<code>opencv_contrib</code>的目录位置，<code>cmake</code>为构建工具，没有的话直接使用<code>apt</code>安装即可。等待完成后继续执行命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make -j$(nproc)</span><br></pre></td></tr></table></figure>
+<p>提示编译成功（— Configuring done …..）后</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
+<p>在<code>/.zshrc</code>（本人使用的是<code>zsh</code>）中添加</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> PKG_CONFIG_PATH=<span class="variable">$PKG_CONFIG_PATH</span>:/usr/<span class="built_in">local</span>/lib/pkgconfig</span><br><span class="line"><span class="built_in">export</span> PYTHONPATH=<span class="variable">$PYTHONPATH</span>:/usr/<span class="built_in">local</span>/lib/python3.8/dist-packages</span><br></pre></td></tr></table></figure>
+<p>将<code>lib</code>加入环境变量中</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /etc/ld.so.conf.d</span><br><span class="line">sudo vim opencv4.conf</span><br></pre></td></tr></table></figure>
+<p>添加<code>/usr/local/lib</code>到文件中</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ldconfig <span class="comment">#刷新目录</span></span><br></pre></td></tr></table></figure>
+<p>此时<code>opencv</code>安装完毕，进行验证，进入<code>opencv_build/opencv/samples/cpp/example_cmake/</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cmake ..</span><br><span class="line">make</span><br><span class="line">./opencv_example</span><br></pre></td></tr></table></figure>
+<p>如果你的设备有摄像头，将会有个窗口打开显示摄像头拍摄的内容</p>
+<p>将<code>darknet</code>的<code>Makefile</code>中的<code>OPENCV=0</code>改为<code>OPENCV=1</code>，并且修改<code>src/image_opencv.cpp</code>，加入头文件</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;opencv2/core/core_c.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;opencv2/videoio/legacy/constants_c.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;opencv2/highgui/highgui_c.h&quot;</span></span></span><br></pre></td></tr></table></figure>
+<p>将文件中的<code>IplImage ipl = m</code> 改为 <code>IplImage ipl = cvIplImage(m)</code></p>
+<p>重新<code>make</code>编译，此时得到一个基于<code>OpenCV</code>的<code>darknet</code></p>
+<h3 id="CUDA"><a href="#CUDA" class="headerlink" title="CUDA"></a>CUDA</h3><p>网址：<a target="_blank" rel="noopener" href="https://developer.nvidia.com/cuda-downloads，根据平台版本以及**Nvidia">https://developer.nvidia.com/cuda-downloads，根据平台版本以及**Nvidia</a> driver**版本进行选择，下载完成后</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo sh cuda_xxxxxxxxx_linux.run</span><br></pre></td></tr></table></figure>
+<p>根据提示安装，不要安装<code>Driver</code>以及<code>CUDA Documentation</code>，安装完成后同样的在<code>.zshrc</code>中加入</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> CUDA_HOME=/usr/<span class="built_in">local</span>/cuda-11.2</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:/usr/<span class="built_in">local</span>/cuda-11.2/bin</span><br><span class="line"><span class="built_in">export</span> LD_LIBRARY_PATH=<span class="variable">$LD_LIBRARY_PATH</span>:/usr/<span class="built_in">local</span>/cuda-11.2/lib64</span><br></pre></td></tr></table></figure>
+<p>测试：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/cuda/samples/1_Utilities/deviceQuery</span><br><span class="line">sudo make</span><br><span class="line">sudo ./deviceQuery</span><br></pre></td></tr></table></figure>
+<p>在终端输入<code>nvcc -V</code>查看是否安装正确</p>
+<h3 id="实时检测"><a href="#实时检测" class="headerlink" title="实时检测"></a>实时检测</h3><p>同样在<code>darknet</code>的<code>Makefile</code>中修改<code>CUDA=0</code>为<code>CUDA=1</code>，输入<code>make</code>重新编译，如果产生报错</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Unsupported gpu architecture <span class="string">&#x27;compute_XX&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>进入<code>Makefile</code>中将对应的行注释掉</p>
+<p><img src="/2021/07/08/yolo/2.png" alt="2"></p>
+<p>执行下面的命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./darknet detector demo cfg/coco.data cfg/yolov2.cfg yolov2.weights</span><br></pre></td></tr></table></figure>
+<p>你的设备上的摄像头将会作为实时检测的输入，如果你正对着摄像头你将会看到你被框起来，分类为<code>person</code></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">李培佳</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://zedd-l.github.io/2021/07/08/yolo/">https://zedd-l.github.io/2021/07/08/yolo/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://zedd-l.github.io" target="_blank">Kzedd</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%A8%A1%E5%BC%8F%E8%AF%86%E5%88%AB/">模式识别</a></div><div class="post_share"><div class="social-share" data-image="/img/avator.GIF" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/09/28/PID%E9%98%B6%E8%B7%83%E5%93%8D%E5%BA%94/"><img class="prev-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">PID阶跃响应</div></div></a></div><div class="next-post pull-right"><a href="/2021/06/17/opencv/"><img class="next-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">移动目标检测</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avator.GIF" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">李培佳</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">11</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="mailto:869798097@qq.com" target="_blank" title=""><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B3%E5%8F%B0"><span class="toc-number">2.</span> <span class="toc-text">平台</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DarkNet"><span class="toc-number">3.</span> <span class="toc-text">DarkNet</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8EOpenCV-amp-CUDA%E7%9A%84%E5%AE%9E%E6%97%B6%E6%A3%80%E6%B5%8B"><span class="toc-number">4.</span> <span class="toc-text">基于OpenCV &amp; CUDA的实时检测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85OpenCV"><span class="toc-number">4.1.</span> <span class="toc-text">安装OpenCV</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CUDA"><span class="toc-number">4.2.</span> <span class="toc-text">CUDA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E6%97%B6%E6%A3%80%E6%B5%8B"><span class="toc-number">4.3.</span> <span class="toc-text">实时检测</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2021/09/28/PID%E9%98%B6%E8%B7%83%E5%93%8D%E5%BA%94/" title="PID阶跃响应"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="PID阶跃响应"/></a><div class="content"><a class="title" href="/2021/09/28/PID%E9%98%B6%E8%B7%83%E5%93%8D%E5%BA%94/" title="PID阶跃响应">PID阶跃响应</a><time datetime="2021-09-28T15:54:39.000Z" title="发表于 2021-09-28 23:54:39">2021-09-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2021/07/08/yolo/" title="YOLOv2安装以及使用">YOLOv2安装以及使用</a><time datetime="2021-07-07T17:12:43.000Z" title="发表于 2021-07-08 01:12:43">2021-07-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2021/06/17/opencv/" title="移动目标检测">移动目标检测</a><time datetime="2021-06-17T11:54:35.000Z" title="发表于 2021-06-17 19:54:35">2021-06-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2021/06/09/Cliff-Walking/" title="Cliff-Walking">Cliff-Walking</a><time datetime="2021-06-09T13:12:25.000Z" title="发表于 2021-06-09 21:12:25">2021-06-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2021/06/07/SQL-Server-python/" title="SQL Server &amp; python">SQL Server &amp; python</a><time datetime="2021-06-07T05:51:42.000Z" title="发表于 2021-06-07 13:51:42">2021-06-07</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('http://up.36992.com/pic/e6/c5/51/e6c551e768092c8655292d89a4034a74.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2021 By 李培佳</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '91bbb220905182860d25',
+      clientSecret: 'b3d108a2085f59f4671056abd98cb15aa5d6b3ce',
+      repo: 'Zedd-l.github.io',
+      owner: 'Zedd-l',
+      admin: ['Zedd-l'],
+      id: 'cf2d1b2e40493d50e0582d2c7bbe54b3',
+      language: 'zh-CN',
+      perPage: 10,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: false,
+      updateCountCallback: commentCount
+    },null))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-fluttering-ribbon.min.js"></script></div></body></html>
